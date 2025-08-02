@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROAUDIO - Soluções Audiovisuais Profissionais</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'red-custom': '#dc2626',
+                        'red-dark': '#991b1b',
+                        'gray-custom': '#000000',
+                        'gray-light': '#0a0a0a',
+                        'accent-red': '#ef4444',
+                        'accent-dark': '#7f1d1d'
+                    },
+                    fontFamily: {
+                        'display': ['Inter', 'system-ui', 'sans-serif'],
+                        'body': ['Inter', 'system-ui', 'sans-serif']
+                    },
+                    animation: {
+                        'float': 'float 8s ease-in-out infinite',
+                        'glow': 'glow 4s ease-in-out infinite alternate',
+                        'slide-up': 'slideUp 0.8s ease-out',
+                        'fade-in-up': 'fadeInUp 1s ease-out',
+                        'scale-in': 'scaleIn 0.6s ease-out',
+                        'elegant-slide': 'elegantSlide 0.8s ease-out',
+                        'texture-move': 'textureMove 20s ease-in-out infinite'
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- WhatsApp Floating Button -->
+    <a href="https://wa.me/5511999999999?text=Olá! Gostaria de saber mais sobre as soluções da PROAUDIO." 
+       class="whatsapp-float" 
+       target="_blank" 
+       title="Fale conosco no WhatsApp - Resposta rápida!">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.465 3.488"/>
+        </svg>
+    </a>
+
+    <!-- Hero Header - APENAS LOGO -->
+    <header class="hero-header">
+        <div class="header-background"></div>
+        
+        <!-- Logo PNG -->
+        <div class="logo-png-container">
+           <!-- <img src="#"                  alt="PROAUDIO Logo"class="logo-png" />-->
+            <div class="logo-overlay">
+                <div class="logo-text-overlay"><img class="logo-pimg" src="asset/logo.png" alt=""></div>
+            </div>
+        </div>
+    </header>
+
+   
+    <section class="carousel-section">
+        <div class="carousel-container">
+            <div class="carousel-track">
+                <div class="carousel-slide active">
+                    <img src="https://images.pexels.com/photos/2774556/pexels-photo-2774556.jpeg?auto=compress&cs=tinysrgb&w=1920&h=600&fit=crop"
+                         alt="Evento com sistema audiovisual profissional" />
+                    <div class="carousel-overlay">
+                        <h3>Eventos Corporativos</h3>
+                        <p>Soluções completas para empresas</p>
+                    </div>
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://images.pexels.com/photos/1181406/pexels-photo-1181406.jpeg?auto=compress&cs=tinysrgb&w=1920&h=600&fit=crop"
+                         alt="Convenção com tecnologia avançada" />
+                    <div class="carousel-overlay">
+                        <h3>Festas & Celebrações</h3>
+                        <p>Momentos especiais com qualidade excepcional</p>
+                    </div>
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://images.pexels.com/photos/2608517/pexels-photo-2608517.jpeg?auto=compress&cs=tinysrgb&w=1920&h=600&fit=crop"
+                         alt="Apresentação com equipamentos de ponta" />
+                    <div class="carousel-overlay">
+                        <h3>Shows & Espetáculos</h3>
+                        <p>Tecnologia de ponta para grandes eventos</p>
+                    </div>
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://images.pexels.com/photos/1181263/pexels-photo-1181263.jpeg?auto=compress&cs=tinysrgb&w=1920&h=600&fit=crop"
+                         alt="Auditório com sistema completo" />
+                    <div class="carousel-overlay">
+                        <h3>Conferências</h3>
+                        <p>Áudio e vídeo profissional para palestras</p>
+                    </div>
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg?auto=compress&cs=tinysrgb&w=1920&h=600&fit=crop"
+                         alt="Equipamentos audiovisuais de alta tecnologia" />
+                    <div class="carousel-overlay">
+                        <h3>Casamentos</h3>
+                        <p>Seu dia especial com a melhor qualidade</p>
+                    </div>
+                </div>
+            </div>
+            
+           
+            <div class="carousel-controls">
+                <button class="carousel-btn prev-btn">‹</button>
+                <button class="carousel-btn next-btn">›</button>
+            </div>
+            
+           
+            <div class="carousel-indicators">
+                <div class="carousel-indicator active" data-slide="0"></div>
+                <div class="carousel-indicator" data-slide="1"></div>
+                <div class="carousel-indicator" data-slide="2"></div>
+                <div class="carousel-indicator" data-slide="3"></div>
+                <div class="carousel-indicator" data-slide="4"></div>
+            </div>
+        </div>
+    </section> 
+
+    <!-- About Section - NOVA ESTRUTURA COM TEXTO CENTRALIZADO -->
+    <section class="about-section">
+        <div class="container mx-auto px-4">
+            <div class="section-header">
+               <!-- <div class="section-badge">SOBRE A EMPRESA</div>-->
+                <h2 class="section-title">
+                    Som e Iluminação Profissional<br><span class="text-white-custom">para eventos Inesquecíveis</span>
+                </h2>
+            </div>
+            
+            <div class="about-content-new">
+                <!-- TEXTO PRINCIPAL CENTRALIZADO -->
+                <div class="about-main-text">
+                    <p class="about-intro">
+                        A ProAudio é especializada na locação de som, iluminação e efeitos especiais para eventos sociais e empresariais em Poços de Caldas e região. Atendemos casamentos, aniversários, festas de 15 anos, formaturas, palestras e eventos empresariais, sempre com soluções completas e personalizadas.
+                    </p>
+                </div>
+
+                <!-- TÓPICOS ORGANIZADOS -->
+                <div class="about-topics">
+                    <!--<h3 class="topics-title">Oferecemos:</h3>-->
+                    
+                    <div class="topics-grid">
+                        <div class="topic-item">
+                            <div class="topic-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M9 18V5l12-2v13"/>
+                                    <circle cx="6" cy="18" r="3"/>
+                                    <circle cx="18" cy="16" r="3"/>
+                                </svg>
+                            </div>
+                            <p>Pacotes completos com som, luz para pista de dança, iluminação ambiente e efeitos especiais</p>
+                        </div>
+
+                        <div class="topic-item">
+                            <div class="topic-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="9" cy="7" r="4"/>
+                                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                </svg>
+                            </div>
+                            <p>DJs experientes e equipe técnica altamente qualificada com mais de 10 anos de experiência</p>
+                        </div>
+
+                        <div class="topic-item">
+                            <div class="topic-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M9 12l2 2 4-4"/>
+                                    <circle cx="12" cy="12" r="10"/>
+                                </svg>
+                            </div>
+                            <p>Estrutura certificada, com montagem segura e conforme exigências do Corpo de Bombeiros</p>
+                        </div>
+
+                        <div class="topic-item">
+                            <div class="topic-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="9" cy="7" r="4"/>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                </svg>
+                            </div>
+                            <p>Integração com cerimonialistas, decoradores, fotógrafos e demais fornecedores para total alinhamento do cronograma</p>
+                        </div>
+
+                        <div class="topic-item">
+                            <div class="topic-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12,6 12,12 16,14"/>
+                                </svg>
+                            </div>
+                            <p>Pontualidade e comprometimento para que tudo aconteça como planejado, sem imprevistos</p>
+                        </div>
+                        <div class="topic-item">
+                            <div class="topic-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12,6 12,12 16,14"/>
+                                </svg>
+                            </div>
+                            <p>
+Atendimento personalizado com foco no cliente. Cada evento é único. Entendemos seu estilo, objetivos e preferências para criar uma experiência sob medida para você. </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TEXTO FINAL CENTRALIZADO -->
+                <div class="about-final-text">
+                    <p class="about-highlight">
+                        Mais do que equipamentos, entregamos experiências memoráveis. Sabemos como transformar cada espaço com a iluminação certa, colocar todos na pista com a playlist perfeita e criar o ambiente ideal para momentos únicos e fotos incríveis.
+                    </p>
+                    
+                    <p class="about-values">
+                        <strong>Profissionalismo, segurança e excelência são os pilares da nossa marca.</strong>
+                    </p>
+                </div>
+                
+                <!-- CARROSSEL EMBAIXO DO TEXTO -->
+               <!-- <div class="about-gallery">
+                    <div class="about-gallery-container">
+                        <div class="about-gallery-track">
+                            <div class="about-gallery-slide active">
+                                <img src="https://images.pexels.com/photos/2774556/pexels-photo-2774556.jpeg?auto=compress&cs=tinysrgb&w=800&h=500&fit=crop"
+                                     alt="Evento com sistema audiovisual profissional" />
+                            </div>
+                            <div class="about-gallery-slide">
+                                <img src="https://images.pexels.com/photos/1181406/pexels-photo-1181406.jpeg?auto=compress&cs=tinysrgb&w=800&h=500&fit=crop"
+                                     alt="Convenção com tecnologia avançada" />
+                            </div>
+                            <div class="about-gallery-slide">
+                                <img src="https://images.pexels.com/photos/2608517/pexels-photo-2608517.jpeg?auto=compress&cs=tinysrgb&w=800&h=500&fit=crop"
+                                     alt="Apresentação com equipamentos de ponta" />
+                            </div>
+                            <div class="about-gallery-slide">
+                                <img src="https://images.pexels.com/photos/1181263/pexels-photo-1181263.jpeg?auto=compress&cs=tinysrgb&w=800&h=500&fit=crop"
+                                     alt="Auditório com sistema completo" />
+                            </div>
+                            <div class="about-gallery-slide">
+                                <img src="https://images.pexels.com/photos/1190298/pexels-photo-1190298.jpeg?auto=compress&cs=tinysrgb&w=800&h=500&fit=crop"
+                                     alt="Equipamentos audiovisuais de alta tecnologia" />
+                            </div>
+                        </div>
+                        
+                        
+                        <div class="about-gallery-controls">
+                            <button class="about-gallery-btn prev-btn">‹</button>
+                            <button class="about-gallery-btn next-btn">›</button>
+                        </div>
+                        
+                       
+                        <div class="about-gallery-indicators">
+                            <div class="about-gallery-indicator active" data-slide="0"></div>
+                            <div class="about-gallery-indicator" data-slide="1"></div>
+                            <div class="about-gallery-indicator" data-slide="2"></div>
+                            <div class="about-gallery-indicator" data-slide="3"></div>
+                            <div class="about-gallery-indicator" data-slide="4"></div>
+                        </div>
+                    </div>
+                </div>-->
+            </div>
+        </div>
+    </section>
+
+    <!-- Solutions Section -->
+    <section class="solutions-section">
+        <div class="container mx-auto px-4">
+            <div class="section-header">
+                <!--<div class="section-badge">NOSSAS SOLUÇÕES</div>-->
+                <h2 class="section-title">
+                    Pacotes <span class="text-red-custom">Promocionais</span>
+                </h2>
+                <!--<div class="section-subtitle">
+                    Soluções completas e personalizadas para cada necessidade do seu evento
+                </div>-->
+            </div>
+            <div class="solutions-container" id="packages-container">
+                <!-- Solutions will be loaded here by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Equipment Section 
+    <section class="equipment-section">
+        <div class="container mx-auto px-4">
+            <div class="section-header">
+               
+                <h2 class="section-title">
+                    Equipamentos <span class="text-red-custom">Profissionais</span>
+                </h2>
+                <div class="section-subtitle">
+                    Tecnologia de ponta para resultados excepcionais em todos os tipos de eventos
+                </div>
+            </div>
+            <div class="equipment-grid" id="equipment-container">
+                Equipment will be loaded here by JavaScript 
+            </div>
+        </div>
+    </section>-->
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container mx-auto px-4">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 class="footer-title">
+                        <span class="footer-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                            </svg>
+                        </span>
+                        Contato Comercial
+                    </h3>
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <span class="contact-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                                </svg>
+                            </span>
+                            <div>
+                                <strong>(35) 9 9908 8597</strong>
+                                <span>Márcio Cazalli</span>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                    <polyline points="22,6 12,13 2,6"/>
+                                </svg>
+                            </span>
+                            <div>
+                                <strong>proaudio035@hotmail.com</strong>
+                                <span>Orçamentos e Propostas</span>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+    <span class="contact-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" 
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+        </svg>
+    </span>
+    <div>
+        <strong>@proaudio_eventos</strong>
+        <span>Nos siga no Instagram</span>
+    </div>
+</div>
+<div class="contact-item">
+    <span class="contact-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" 
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3.64L18 10h-4V7a1 1 0 0 1 1-1h3z"/>
+        </svg>
+    </span>
+    <div>
+        <strong>/proaudioeventos</strong>
+        <span>Curta no Facebook</span>
+    </div>
+</div>
+
+
+                        
+                       
+                    </div>
+                </div>
+                
+               
+                    <div class="map-container">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d330975.81190608465!2d-46.63893243651824!3d-21.795940497982304!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94c9c32c478c87cf%3A0xfb00e9b3715381fe!2sPo%C3%A7os%20de%20Caldas%2C%20MG!5e0!3m2!1spt-BR!2sbr!4v1751933781717!5m2!1spt-BR!2sbr" width="700" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>    
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                
+                <p class="copyright">&copy; 2024 PROAUDIO Solutions. Todos os direitos reservados.</p>
+                <p class="tagline">Excelência em soluções audiovisuais profissionais</p>
+                
+                <!-- Developer Credit with Light Effect -->
+                <div class="developer-credit">
+                    <span class="developer-text">Desenvolvido por ICARO VITOR</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal -->
+    <div id="equipmentModal" class="modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <h3 id="modalTitle" class="modal-title"></h3>
+            <div class="modal-video">
+                <div class="video-placeholder">
+                    <div class="play-icon">▶️</div>
+                    <span class="video-text">Demonstração do Equipamento</span>
+                </div>
+            </div>
+            <p id="modalDescription" class="modal-description"></p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
