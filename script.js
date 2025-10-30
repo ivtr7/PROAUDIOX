@@ -20,22 +20,154 @@ $(document).ready(function() {
         });
     }
 
-    // NOVO CARROSSEL PRINCIPAL - Seção independente
-    function initMainCarousel() {
-        let currentSlide = 0;
-        const slides = $('.carousel-slide');
-        const indicators = $('.carousel-indicator');
-        const totalSlides = slides.length;
-        let autoSlideInterval;
+    // Função auxiliar para escapar HTML (prevenir XSS)
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
 
+    // ========================================
+    // CARROSSEL PRINCIPAL - AUTO-CONFIGURÁVEL
+    // ========================================
+    // Carrega slides do localStorage (se configurado na página de edição)
+    // Ou usa os slides estáticos do HTML
+    function initMainCarousel() {
+        const STORAGE_KEY = 'proaudio_carousel_slides';
+        const carouselTrack = $('.carousel-track');
+        
+        // Tentar carregar slides do localStorage
+        const savedSlides = localStorage.getItem(STORAGE_KEY);
+        let slidesData = null;
+        
+        console.log('🔍 Verificando localStorage:', {
+            key: STORAGE_KEY,
+            hasData: !!savedSlides,
+            dataLength: savedSlides ? savedSlides.length : 0
+        });
+        
+        if (savedSlides) {
+            try {
+                slidesData = JSON.parse(savedSlides);
+                console.log(`✅ Carregando ${slidesData.length} slide(s) do localStorage:`, slidesData);
+                
+                if (!Array.isArray(slidesData) || slidesData.length === 0) {
+                    console.warn('⚠️ Slides inválidos no localStorage, usando slides padrão do HTML');
+                    slidesData = null;
+                } else {
+                    // Limpar slides estáticos do HTML
+                    carouselTrack.empty();
+                    
+                    // Gerar slides dinamicamente
+                    slidesData.forEach((slide, index) => {
+                        if (!slide.image) {
+                            console.warn(`⚠️ Slide ${index + 1} sem URL de imagem, pulando...`);
+                            return;
+                        }
+                        
+                        const slideElement = $(`
+                            <div class="carousel-slide">
+                                <img src="${escapeHtml(slide.image)}" 
+                                     loading="${index === 0 ? 'eager' : 'lazy'}"
+                                     onerror="console.error('❌ Erro ao carregar imagem:', this.src)" />
+                            </div>
+                        `);
+                        carouselTrack.append(slideElement);
+                    });
+                    
+                    console.log(`✅ ${slidesData.length} slide(s) adicionados dinamicamente ao carrossel`);
+                }
+            } catch (e) {
+                console.error('❌ Erro ao carregar slides do localStorage:', e);
+                console.error('Dados que causaram erro:', savedSlides);
+                slidesData = null;
+            }
+        } else {
+            console.log('ℹ️ Nenhum dado salvo no localStorage, usando slides padrão do HTML');
+        }
+        
+        const slides = $('.carousel-slide');
+        const totalSlides = slides.length;
+        
+        // Se não houver slides, não inicializa
+        if (totalSlides === 0) {
+            console.warn('Nenhum slide encontrado no carrossel');
+            return;
+        }
+        
+        let currentSlide = 0;
+        let autoSlideInterval;
+        const indicatorsContainer = $('.carousel-indicators');
+        
+        // ========================================
+        // GERAR INDICADORES AUTOMATICAMENTE
+        // ========================================
+        indicatorsContainer.empty(); // Limpa indicadores existentes
+        
+        for (let i = 0; i < totalSlides; i++) {
+            const indicator = $('<div>')
+                .addClass('carousel-indicator')
+                .attr('data-slide', i)
+                .attr('aria-label', `Ir para o slide ${i + 1}`)
+                .attr('role', 'button')
+                .attr('tabindex', '0');
+            
+            indicatorsContainer.append(indicator);
+        }
+        
+        const indicators = $('.carousel-indicator');
+        
+        // ========================================
+        // FUNÇÕES DO CARROSSEL
+        // ========================================
         function showSlide(index) {
+            // Valida índice
+            if (index < 0) index = totalSlides - 1;
+            if (index >= totalSlides) index = 0;
+            
+            // Remove active de todos
             slides.removeClass('active');
             indicators.removeClass('active');
             
+            // Adiciona active no slide atual
             $(slides[index]).addClass('active');
             $(indicators[index]).addClass('active');
             
             currentSlide = index;
+            
+            // Configura animação de pan no mobile
+            if (window.innerWidth <= 767) {
+                const activeSlideImg = $(slides[index]).find('img');
+                
+                // Remove listeners anteriores para evitar duplicação
+                activeSlideImg.off('animationend.carousel');
+                
+                // Remove animação anterior
+                activeSlideImg.css('animation', 'none');
+                
+                // Força reflow para reiniciar
+                void activeSlideImg[0].offsetHeight;
+                
+                // Aplica nova animação
+                activeSlideImg.css('animation', 'imagePanMobile 30s ease-in-out forwards');
+                
+                // Quando animação terminar, troca para próximo slide
+                activeSlideImg.on('animationend.carousel', function() {
+                    // Pequeno delay para suavizar
+                    setTimeout(() => {
+                        nextSlide();
+                    }, 500);
+                });
+            }
+            
+            // Preload da próxima imagem
+            const nextIndex = (index + 1) % totalSlides;
+            const nextImg = $(slides[nextIndex]).find('img')[0];
+            if (nextImg && !nextImg.complete) {
+                const preloadImg = new Image();
+                preloadImg.src = nextImg.src;
+            }
         }
 
         function nextSlide() {
@@ -49,55 +181,166 @@ $(document).ready(function() {
         }
 
         function startAutoSlide() {
-            autoSlideInterval = setInterval(nextSlide, 2000); // 2 segundos
+            stopAutoSlide(); // Garante que não há interval duplicado
+            
+            // No mobile, a animação de pan controla a troca de slides
+            // No desktop/tablet, usa intervalo automático
+            if (window.innerWidth > 767) {
+                autoSlideInterval = setInterval(nextSlide, 4000); // 4 segundos no desktop
+            }
+            // No mobile, a troca acontece quando a animação de pan terminar
         }
 
         function stopAutoSlide() {
-            clearInterval(autoSlideInterval);
+            if (autoSlideInterval) {
+                clearInterval(autoSlideInterval);
+                autoSlideInterval = null;
+            }
         }
 
-        // Manual controls
-        $('.carousel-btn.next-btn').click(function() {
+        // ========================================
+        // CONTROLES MANUAIS
+        // ========================================
+        $('.carousel-btn.next-btn').off('click').on('click', function() {
+            // Para a animação atual
+            const currentImg = $(slides[currentSlide]).find('img');
+            currentImg.off('animationend.carousel');
+            currentImg.css('animation', 'none');
+            
             stopAutoSlide();
             nextSlide();
-            startAutoSlide();
-        });
-
-        $('.carousel-btn.prev-btn').click(function() {
-            stopAutoSlide();
-            prevSlide();
-            startAutoSlide();
-        });
-
-        // Indicator controls
-        $('.carousel-indicator').click(function() {
-            stopAutoSlide();
-            const slideIndex = $(this).data('slide');
-            showSlide(slideIndex);
-            startAutoSlide();
-        });
-
-        // Pause on hover
-        $('.carousel-container').hover(
-            function() { stopAutoSlide(); },
-            function() { startAutoSlide(); }
-        );
-
-        // Start auto-slide
-        startAutoSlide();
-
-        // Keyboard navigation
-        $(document).keydown(function(e) {
-            if (e.key === 'ArrowLeft') {
-                stopAutoSlide();
-                prevSlide();
-                startAutoSlide();
-            } else if (e.key === 'ArrowRight') {
-                stopAutoSlide();
-                nextSlide();
+            
+            // No desktop reinicia auto-slide, no mobile a animação de pan controla
+            if (window.innerWidth > 767) {
                 startAutoSlide();
             }
         });
+
+        $('.carousel-btn.prev-btn').off('click').on('click', function() {
+            // Para a animação atual
+            const currentImg = $(slides[currentSlide]).find('img');
+            currentImg.off('animationend.carousel');
+            currentImg.css('animation', 'none');
+            
+            stopAutoSlide();
+            prevSlide();
+            
+            // No desktop reinicia auto-slide, no mobile a animação de pan controla
+            if (window.innerWidth > 767) {
+                startAutoSlide();
+            }
+        });
+
+        // Controles por indicadores (com event delegation para slides dinâmicos)
+        indicatorsContainer.off('click', '.carousel-indicator').on('click', '.carousel-indicator', function() {
+            // Para a animação atual
+            const currentImg = $(slides[currentSlide]).find('img');
+            currentImg.off('animationend.carousel');
+            currentImg.css('animation', 'none');
+            
+            stopAutoSlide();
+            const slideIndex = parseInt($(this).data('slide'));
+            showSlide(slideIndex);
+            
+            // No desktop reinicia auto-slide, no mobile a animação de pan controla
+            if (window.innerWidth > 767) {
+                startAutoSlide();
+            }
+        });
+        
+        // Navegação por teclado nos indicadores
+        indicatorsContainer.on('keydown', '.carousel-indicator', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                
+                // Para a animação atual
+                const currentImg = $(slides[currentSlide]).find('img');
+                currentImg.off('animationend.carousel');
+                currentImg.css('animation', 'none');
+                
+                stopAutoSlide();
+                const slideIndex = parseInt($(this).data('slide'));
+                showSlide(slideIndex);
+                
+                // No desktop reinicia auto-slide
+                if (window.innerWidth > 767) {
+                    startAutoSlide();
+                }
+            }
+        });
+
+        // ========================================
+        // PAUSE NO HOVER
+        // ========================================
+        $('.carousel-container').off('mouseenter mouseleave').on({
+            mouseenter: function() { stopAutoSlide(); },
+            mouseleave: function() { startAutoSlide(); }
+        });
+
+        // ========================================
+        // NAVEGAÇÃO POR TECLADO
+        // ========================================
+        $(document).off('keydown.carousel').on('keydown.carousel', function(e) {
+            // Só funciona se o carrossel estiver visível
+            if (!$('.carousel-section').is(':visible')) return;
+            
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                
+                // Para a animação atual
+                const currentImg = $(slides[currentSlide]).find('img');
+                currentImg.off('animationend.carousel');
+                currentImg.css('animation', 'none');
+                
+                stopAutoSlide();
+                prevSlide();
+                
+                // No desktop reinicia auto-slide
+                if (window.innerWidth > 767) {
+                    startAutoSlide();
+                }
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                
+                // Para a animação atual
+                const currentImg = $(slides[currentSlide]).find('img');
+                currentImg.off('animationend.carousel');
+                currentImg.css('animation', 'none');
+                
+                stopAutoSlide();
+                nextSlide();
+                
+                // No desktop reinicia auto-slide
+                if (window.innerWidth > 767) {
+                    startAutoSlide();
+                }
+            }
+        });
+
+        // ========================================
+        // INICIALIZAÇÃO
+        // ========================================
+        // Primeiro slide sempre começa ativo
+        showSlide(0);
+        
+        // Inicia auto-slide após um pequeno delay
+        setTimeout(() => {
+            startAutoSlide();
+        }, 1000);
+        
+        // Log para debug
+        console.log(`✅ Carrossel inicializado com ${totalSlides} slide(s)`);
+        console.log('📋 Slides no DOM:', slides.length);
+        
+        // Verificar se há imagens com erro
+        setTimeout(() => {
+            slides.each(function(index) {
+                const img = $(this).find('img')[0];
+                if (img && !img.complete) {
+                    console.warn(`⚠️ Imagem do slide ${index + 1} ainda não carregou:`, img.src);
+                }
+            });
+        }, 2000);
     }
 
     // ABOUT GALLERY - Carrossel horizontal
@@ -425,7 +668,7 @@ $(document).ready(function() {
             price: "R$ 1.200",
             duration: "9 horas",
             extraHour: "R$ 100/hora extra",
-            image: "asset/pac11.jpg",
+            image: "asset/empresarial.jpg",
             equipment: [
                 "1 Mesa de som (6 canais)",
                 "2 Caixas de 12\" (300w RMS cada)",
@@ -440,15 +683,16 @@ $(document).ready(function() {
             highlight: false,
             category: "profissional"
         },
+      
         {
             id: 12,
-            title: "EMPRESARIAL PLUS",
-            subtitle: "Impacto, profissionalismo e mais presença de marca",
-            description: "O pacote mais completo para eventos empresariais que desejam causar impacto, reforçar sua identidade visual e transmitir ainda mais credibilidade. Inclui Backdrop 3x3m para destacar sua marca e patrocinadores.",
+            title: "House to House",
+            subtitle: "Leve a balada para a sua casa com a vibe que só a ProAudio consegue entregar.",
+            description: "O pacote House to House entrega uma festa eletrônica completa com som potente, luzes vibrantes, iluminação decorativa ambiente e um Line up com alguns dos maiores nomes da música eletrônica da nossa região que você dificilmente encontrará em outra festa particular.",
             price: "R$ 1.600",
             duration: "9 horas",
             extraHour: "R$ 150/hora extra",
-            image: "asset/pac12.jpg",
+            image: "asset/hth.jpg",
             equipment: [
                 "1 Backdrop com treliça de 3x3 metros em Alumínio Q30",
                 "1 Mesa de som (6 canais)",
@@ -466,6 +710,8 @@ $(document).ready(function() {
             highlight: false,
             category: "profissional"
         }
+        
+       
     ];
 
     // Equipment data
@@ -611,11 +857,11 @@ $(document).ready(function() {
             const hiddenEquipment = pkg.equipment.slice(2);
             
             const packageCard = $(`
-                <div class="package-card ${highlightClass} ${categoryClass} animate-on-scroll" style="animation-delay: ${index * 0.1}s">
+                <div class="package-card ${highlightClass} ${categoryClass}" data-aos="fade-up" data-aos-duration="500" data-aos-delay="${index * 80}">
                     ${pkg.highlight ? '<div class="package-badge">DESTAQUE</div>' : ''}
                     
-                    <!-- IMAGEM SEMPRE VISÍVEL NO MOBILE -->
-                    <div class="package-image mobile-visible">
+                    <!-- IMAGEM SEMPRE EM CIMA -->
+                    <div class="package-image">
                         <img src="${pkg.image}" alt="${pkg.title}" loading="lazy">
                         <div class="package-overlay">
                             <div class="package-category-overlay">${pkg.category.toUpperCase()}</div>
@@ -666,7 +912,12 @@ $(document).ready(function() {
                                         </div>
                                     `).join('')}
                                 </div>
-                                <button class="equipment-toggle">Equipamentos Inclusos </button>
+                                <button class="equipment-toggle">
+                                    <span class="toggle-text">Ver todos os equipamentos</span>
+                                    <svg class="toggle-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                    </svg>
+                                </button>
                             ` : ''}
                         </div>
                         
@@ -722,17 +973,16 @@ $(document).ready(function() {
             e.preventDefault();
             e.stopPropagation();
             
-            const packageCard = $(this).closest('.package-card');
-            const hiddenList = $(this).siblings('.equipment-list-hidden');
+            const button = $(this);
+            const packageCard = button.closest('.package-card');
+            const hiddenList = button.siblings('.equipment-list-hidden');
             const isExpanded = hiddenList.is(':visible');
             
-            if (isExpanded) {
-                hiddenList.slideUp(300);
-                $(this).text($(this).text().replace('Ver Menos', 'Ver Tudo'));
-            } else {
-                hiddenList.slideDown(300);
-                $(this).text($(this).text().replace('Ver Tudo', 'Ver Menos'));
-            }
+            hiddenList.slideToggle(300);
+            
+            // Toggle button text and icon
+            button.toggleClass('expanded', !isExpanded);
+            button.find('.toggle-text').text(isExpanded ? 'Ver todos os equipamentos' : 'Ocultar equipamentos');
         });
     }
 
@@ -872,6 +1122,94 @@ $(document).ready(function() {
         });
     }
 
+    // Initialize AOS (Animate on Scroll)
+    function initAOS() {
+        AOS.init({
+            duration: 600,              // Mais rápido e dinâmico
+            easing: 'ease-out-quart',   // Easing mais suave e natural
+            once: true,                 // Anima APENAS UMA VEZ
+            mirror: false,              // NÃO desaparece ao fazer scroll
+            offset: 80,                 // Começa a animar um pouco antes
+            delay: 0,
+            anchorPlacement: 'top-bottom',
+            disable: false
+        });
+        
+        // Refresh AOS on window resize
+        window.addEventListener('resize', () => {
+            AOS.refresh();
+        });
+    }
+
+    // Animated Counter for Trust Badges
+    function animateCounter(element, target, suffix = '') {
+        let current = 0;
+        const increment = target / 50;
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+                element.textContent = target + suffix;
+                clearInterval(timer);
+            } else {
+                element.textContent = Math.floor(current) + suffix;
+            }
+        }, 30);
+    }
+
+    // Initialize counters when in viewport
+    function initCounters() {
+        const trustBadges = document.querySelectorAll('.trust-badge');
+        const observerOptions = {
+            threshold: 0.5,
+            rootMargin: '0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const badge = entry.target;
+                    const counter = badge.querySelector('.counter-value');
+                    if (counter && !counter.classList.contains('counted')) {
+                        counter.classList.add('counted');
+                        const target = parseInt(counter.dataset.target);
+                        const suffix = counter.dataset.suffix || '';
+                        animateCounter(counter, target, suffix);
+                    }
+                }
+            });
+        }, observerOptions);
+
+        trustBadges.forEach(badge => observer.observe(badge));
+    }
+
+    // Parallax effect for hero section
+    function initParallax() {
+        $(window).on('scroll', function() {
+            const scrolled = $(window).scrollTop();
+            $('.logo-text-overlay').css('transform', `translateY(${scrolled * 0.5}px)`);
+            $('.carousel-section').css('transform', `translateY(${scrolled * 0.3}px)`);
+        });
+    }
+
+    // Smooth micro-interactions
+    function initMicroInteractions() {
+        // Add ripple effect on buttons
+        $('.package-btn, .carousel-btn, .whatsapp-float').on('click', function(e) {
+            const ripple = $('<span class="ripple"></span>');
+            $(this).append(ripple);
+            
+            const x = e.pageX - $(this).offset().left;
+            const y = e.pageY - $(this).offset().top;
+            
+            ripple.css({
+                left: x,
+                top: y
+            });
+            
+            setTimeout(() => ripple.remove(), 600);
+        });
+    }
+
     // Initialize all functionality
     function init() {
         loadPackages();
@@ -884,11 +1222,42 @@ $(document).ready(function() {
         initPerformanceOptimizations();
         initWhatsAppButton();
         initErrorHandling();
+        initAOS(); // Initialize AOS animations
+        initCounters(); // Initialize animated counters
+        initParallax(); // Initialize parallax effects
+        initMicroInteractions(); // Initialize micro-interactions
 
-        // Add loaded class to body for CSS transitions
-        $('body').addClass('loaded');
+        // Hide page loader and show content
+        setTimeout(() => {
+            $('.page-loader').addClass('hidden');
+            $('body').addClass('loaded');
+        }, 800);
         
-        console.log('PROAUDIO website initialized successfully!');
+        // Scroll Indicator click e auto-hide
+        $('.scroll-indicator').click(function() {
+            $('html, body').animate({
+                scrollTop: $('.carousel-section').offset().top
+            }, 800, 'swing');
+        });
+        
+        // Esconde a setinha quando o usuário fizer scroll
+        let scrollTimeout;
+        $(window).on('scroll', function() {
+            const scrollIndicator = $('.scroll-indicator');
+            const scrollTop = $(window).scrollTop();
+            
+            if (scrollTop > 100) {
+                scrollIndicator.fadeOut(300);
+            } else {
+                clearTimeout(scrollTimeout);
+                scrollIndicator.fadeIn(300);
+            }
+        });
+        
+        console.log('✨ PROAUDIO website initialized successfully!');
+        console.log('🎨 Design moderno com UX/UI otimizado');
+        console.log('🚀 Animações suaves com AOS e efeitos parallax');
+        console.log('💡 Vieses cognitivos aplicados: Prova Social, Escassez, Ancoragem');
     }
 
     // Start initialization

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Carrossel - PROAUDIO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+            color: #ffffff;
+            font-family: 'Inter', system-ui, sans-serif;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #dc2626;
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px rgba(220, 38, 38, 0.3);
+        }
+        
+        .subtitle {
+            color: #cbd5e1;
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+        }
+        
+        .slide-item {
+            background: rgba(220, 38, 38, 0.05);
+            border: 2px solid rgba(220, 38, 38, 0.3);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .slide-item:hover {
+            border-color: rgba(220, 38, 38, 0.5);
+            background: rgba(220, 38, 38, 0.1);
+        }
+        
+        .slide-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .slide-number {
+            color: #dc2626;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        
+        .btn-remove {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-remove:hover {
+            background: #ef4444;
+            transform: scale(1.05);
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        label {
+            display: block;
+            color: #e2e8f0;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            border-radius: 0.5rem;
+            color: #ffffff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #dc2626;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        
+        .btn-add {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-bottom: 2rem;
+        }
+        
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(220, 38, 38, 0.4);
+        }
+        
+        .btn-save {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+            border: none;
+            padding: 1rem 3rem;
+            border-radius: 0.5rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 2rem;
+            width: 100%;
+        }
+        
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(34, 197, 94, 0.4);
+        }
+        
+        .preview-section {
+            margin-top: 3rem;
+            padding-top: 3rem;
+            border-top: 2px solid rgba(220, 38, 38, 0.3);
+        }
+        
+        .info-box {
+            background: rgba(220, 38, 38, 0.1);
+            border-left: 4px solid #dc2626;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .info-box p {
+            color: #e2e8f0;
+            margin: 0.5rem 0;
+        }
+        
+        .success-message {
+            background: rgba(34, 197, 94, 0.2);
+            border: 2px solid #22c55e;
+            color: #86efac;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            display: none;
+        }
+        
+        .success-message.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Editor de Carrossel</h1>
+        <p class="subtitle">Configure as imagens do carrossel da página principal</p>
+        
+        <div class="info-box">
+            <p><strong>💡 Dica:</strong> Dimensão recomendada das imagens: <strong>1920 × 540px</strong> (proporção panorâmica que encaixa perfeitamente)</p>
+            <p><strong>📁 Caminho:</strong> Coloque as imagens na pasta <code>asset/</code> ou use URLs externas</p>
+            <p><strong>✨ Preview:</strong> Após salvar, recarregue a página principal para ver as mudanças</p>
+        </div>
+        
+        <div id="slides-container">
+            <!-- Slides serão inseridos aqui dinamicamente -->
+        </div>
+        
+        <button class="btn-add" onclick="addSlide()">➕ Adicionar Novo Slide</button>
+        
+        <button class="btn-save" onclick="saveSlides()">💾 Salvar Configurações</button>
+        
+        <div id="success-message" class="success-message">
+            ✅ Configurações salvas com sucesso! Recarregue a página principal para ver as mudanças.
+        </div>
+        
+        <div class="preview-section">
+            <h2 style="color: #dc2626; margin-bottom: 1rem;">📊 Visualização</h2>
+            <p style="color: #cbd5e1; margin-bottom: 1.5rem;">
+                Total de slides configurados: <strong id="total-slides">0</strong>
+            </p>
+            <button class="btn-add" onclick="debugStorage()" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); margin-top: 1rem;">
+                🔍 Verificar Dados Salvos (Debug)
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        // ========================================
+        // Gerenciador de Slides do Carrossel
+        // ========================================
+        
+        let slides = [];
+        const STORAGE_KEY = 'proaudio_carousel_slides';
+        
+        // Carregar slides salvos ou usar padrão
+        function loadSlides() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    slides = JSON.parse(saved);
+                } catch (e) {
+                    console.error('Erro ao carregar slides:', e);
+                    slides = getDefaultSlides();
+                }
+            } else {
+                slides = getDefaultSlides();
+            }
+            renderSlides();
+        }
+        
+         // Slides padrão
+         function getDefaultSlides() {
+             return [
+                 {
+                     image: './asset/t.png'
+                 },
+                 {
+                     image: 'asset/carousel2.jpg'
+                 },
+                 {
+                     image: 'asset/carousel3.jpg'
+                 },
+                 {
+                     image: 'asset/carousel4.jpg'
+                 },
+                 {
+                     image: 'asset/pac1.jpg'
+                 }
+             ];
+         }
+        
+        // Renderizar slides no DOM
+        function renderSlides() {
+            const container = document.getElementById('slides-container');
+            container.innerHTML = '';
+            
+            slides.forEach((slide, index) => {
+                const slideElement = createSlideElement(slide, index);
+                container.appendChild(slideElement);
+            });
+            
+            updateTotalSlides();
+        }
+        
+        // Criar elemento de slide
+        function createSlideElement(slide, index) {
+            const div = document.createElement('div');
+            div.className = 'slide-item';
+            div.innerHTML = `
+                <div class="slide-header">
+                    <span class="slide-number">Slide ${index + 1}</span>
+                    <button class="btn-remove" onclick="removeSlide(${index})">🗑️ Remover</button>
+                </div>
+                <div class="form-group">
+                    <label>URL da Imagem *</label>
+                    <input type="text" 
+                           value="${escapeHtml(slide.image || '')}" 
+                           onchange="updateSlide(${index}, 'image', this.value)"
+                           placeholder="Ex: asset/carousel1.jpg ou https://exemplo.com/imagem.jpg">
+                </div>
+            `;
+            return div;
+        }
+        
+        // Atualizar slide
+        function updateSlide(index, field, value) {
+            if (slides[index]) {
+                slides[index][field] = value;
+                updateTotalSlides();
+            }
+        }
+        
+        // Remover slide
+        function removeSlide(index) {
+            if (confirm(`Tem certeza que deseja remover o Slide ${index + 1}?`)) {
+                slides.splice(index, 1);
+                renderSlides();
+            }
+        }
+        
+         // Adicionar novo slide
+         function addSlide() {
+             slides.push({
+                 image: 'asset/carousel-novo.jpg'
+             });
+             renderSlides();
+             
+             // Scroll para o novo slide
+             setTimeout(() => {
+                 const container = document.getElementById('slides-container');
+                 const lastSlide = container.lastElementChild;
+                 if (lastSlide) {
+                     lastSlide.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                 }
+             }, 100);
+         }
+        
+         // Salvar slides
+         function saveSlides() {
+             // Validar slides
+             const invalidSlides = slides.filter(s => !s.image);
+             if (invalidSlides.length > 0) {
+                 alert('❌ Erro: Todos os slides precisam ter URL da imagem preenchida!');
+                 console.error('Slides inválidos:', invalidSlides);
+                 return;
+             }
+             
+             if (slides.length === 0) {
+                 alert('❌ Erro: Adicione pelo menos um slide!');
+                 return;
+             }
+             
+             // Salvar no localStorage
+             try {
+                 const slidesJson = JSON.stringify(slides);
+                 localStorage.setItem(STORAGE_KEY, slidesJson);
+                 
+                 // Verificar se salvou corretamente
+                 const verification = localStorage.getItem(STORAGE_KEY);
+                 if (verification === slidesJson) {
+                     showSuccessMessage();
+                     console.log('✅ Slides salvos com sucesso:', slides);
+                     console.log('📦 Chave usada:', STORAGE_KEY);
+                     console.log('📏 Tamanho dos dados:', slidesJson.length, 'caracteres');
+                     
+                     // Mostrar instruções
+                     alert('✅ Configurações salvas!\n\nAgora:\n1. Abra index.html\n2. Recarregue a página (F5)\n3. Os slides devem aparecer!');
+                 } else {
+                     throw new Error('Falha na verificação do localStorage');
+                 }
+             } catch (e) {
+                 let errorMsg = 'Erro ao salvar: ' + e.message;
+                 if (e.message.includes('QuotaExceededError')) {
+                     errorMsg = '❌ Erro: O navegador não tem espaço suficiente para salvar. Tente limpar o cache ou reduzir o número de slides.';
+                 }
+                 alert(errorMsg);
+                 console.error('❌ Erro ao salvar:', e);
+             }
+         }
+         
+         // Função para verificar o que está salvo (para debug)
+         function debugStorage() {
+             const saved = localStorage.getItem(STORAGE_KEY);
+             if (saved) {
+                 try {
+                     const parsed = JSON.parse(saved);
+                     console.log('📦 Dados salvos no localStorage:', parsed);
+                     alert(`✅ Dados encontrados:\n${parsed.length} slide(s) salvos\n\nVerifique o console (F12) para mais detalhes`);
+                 } catch (e) {
+                     console.error('Erro ao ler dados:', e);
+                     alert('❌ Erro ao ler dados salvos');
+                 }
+             } else {
+                 console.log('ℹ️ Nenhum dado salvo no localStorage');
+                 alert('ℹ️ Nenhum dado salvo ainda');
+             }
+         }
+        
+        // Mostrar mensagem de sucesso
+        function showSuccessMessage() {
+            const msg = document.getElementById('success-message');
+            msg.classList.add('show');
+            
+            setTimeout(() => {
+                msg.classList.remove('show');
+            }, 5000);
+        }
+        
+        // Atualizar contador
+        function updateTotalSlides() {
+            document.getElementById('total-slides').textContent = slides.length;
+        }
+        
+        // Escapar HTML para prevenir XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSlides();
+            console.log('✅ Editor de carrossel carregado');
+        });
+    </script>
+</body>
+</html>
+
