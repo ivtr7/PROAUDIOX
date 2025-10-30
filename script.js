@@ -29,66 +29,17 @@ $(document).ready(function() {
     }
 
     // ========================================
-    // CARROSSEL PRINCIPAL - AUTO-CONFIGURÁVEL
+    // CARROSSEL PRINCIPAL - EDIÇÃO DIRETA NO HTML
     // ========================================
-    // Carrega slides do localStorage (se configurado na página de edição)
-    // Ou usa os slides estáticos do HTML
+    // Usa os slides diretamente do HTML (sem localStorage)
     function initMainCarousel() {
-        const STORAGE_KEY = 'proaudio_carousel_slides';
         const carouselTrack = $('.carousel-track');
         
-        // Tentar carregar slides do localStorage
-        const savedSlides = localStorage.getItem(STORAGE_KEY);
-        let slidesData = null;
-        
-        console.log('🔍 Verificando localStorage:', {
-            key: STORAGE_KEY,
-            hasData: !!savedSlides,
-            dataLength: savedSlides ? savedSlides.length : 0
-        });
-        
-        if (savedSlides) {
-            try {
-                slidesData = JSON.parse(savedSlides);
-                console.log(`✅ Carregando ${slidesData.length} slide(s) do localStorage:`, slidesData);
-                
-                if (!Array.isArray(slidesData) || slidesData.length === 0) {
-                    console.warn('⚠️ Slides inválidos no localStorage, usando slides padrão do HTML');
-                    slidesData = null;
-                } else {
-                    // Limpar slides estáticos do HTML
-                    carouselTrack.empty();
-                    
-                    // Gerar slides dinamicamente
-                    slidesData.forEach((slide, index) => {
-                        if (!slide.image) {
-                            console.warn(`⚠️ Slide ${index + 1} sem URL de imagem, pulando...`);
-                            return;
-                        }
-                        
-                        const slideElement = $(`
-                            <div class="carousel-slide">
-                                <img src="${escapeHtml(slide.image)}" 
-                                     loading="${index === 0 ? 'eager' : 'lazy'}"
-                                     onerror="console.error('❌ Erro ao carregar imagem:', this.src)" />
-                            </div>
-                        `);
-                        carouselTrack.append(slideElement);
-                    });
-                    
-                    console.log(`✅ ${slidesData.length} slide(s) adicionados dinamicamente ao carrossel`);
-                }
-            } catch (e) {
-                console.error('❌ Erro ao carregar slides do localStorage:', e);
-                console.error('Dados que causaram erro:', savedSlides);
-                slidesData = null;
-            }
-        } else {
-            console.log('ℹ️ Nenhum dado salvo no localStorage, usando slides padrão do HTML');
-        }
-        
+        // Usa os slides que já estão no HTML
         const slides = $('.carousel-slide');
         const totalSlides = slides.length;
+        
+        console.log(`✅ Carregando ${totalSlides} slide(s) do HTML`);
         
         // Se não houver slides, não inicializa
         if (totalSlides === 0) {
